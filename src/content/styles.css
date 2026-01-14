@@ -1,0 +1,152 @@
+/* Mermaid Viewer - Content Script Styles */
+
+.mermaid-viewer-wrapper {
+  position: relative;
+  margin: 1em 0;
+  border: 1px solid var(--mermaid-viewer-border, #e1e4e8);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--mermaid-viewer-bg, #ffffff);
+}
+
+/* Dark theme detection */
+@media (prefers-color-scheme: dark) {
+  .mermaid-viewer-wrapper {
+    --mermaid-viewer-border: #30363d;
+    --mermaid-viewer-bg: #0d1117;
+    --mermaid-viewer-toolbar-bg: #161b22;
+    --mermaid-viewer-btn-bg: #21262d;
+    --mermaid-viewer-btn-hover: #30363d;
+    --mermaid-viewer-btn-active: #388bfd;
+    --mermaid-viewer-text: #c9d1d9;
+  }
+}
+
+/* Light theme */
+.mermaid-viewer-wrapper {
+  --mermaid-viewer-border: #e1e4e8;
+  --mermaid-viewer-bg: #ffffff;
+  --mermaid-viewer-toolbar-bg: #f6f8fa;
+  --mermaid-viewer-btn-bg: #f3f4f6;
+  --mermaid-viewer-btn-hover: #e5e7eb;
+  --mermaid-viewer-btn-active: #2563eb;
+  --mermaid-viewer-text: #24292f;
+}
+
+/* Auto-detect dark mode from common page patterns */
+html.dark .mermaid-viewer-wrapper,
+body.dark .mermaid-viewer-wrapper,
+[data-theme="dark"] .mermaid-viewer-wrapper,
+[data-color-mode="dark"] .mermaid-viewer-wrapper {
+  --mermaid-viewer-border: #30363d;
+  --mermaid-viewer-bg: #0d1117;
+  --mermaid-viewer-toolbar-bg: #161b22;
+  --mermaid-viewer-btn-bg: #21262d;
+  --mermaid-viewer-btn-hover: #30363d;
+  --mermaid-viewer-btn-active: #388bfd;
+  --mermaid-viewer-text: #c9d1d9;
+}
+
+.mermaid-viewer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--mermaid-viewer-toolbar-bg);
+  border-bottom: 1px solid var(--mermaid-viewer-border);
+}
+
+.mermaid-viewer-btn-group {
+  display: flex;
+  gap: 4px;
+}
+
+.mermaid-viewer-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  color: var(--mermaid-viewer-text);
+  background: var(--mermaid-viewer-btn-bg);
+  border: 1px solid var(--mermaid-viewer-border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.mermaid-viewer-btn:hover {
+  background: var(--mermaid-viewer-btn-hover);
+}
+
+.mermaid-viewer-btn-active {
+  background: var(--mermaid-viewer-btn-active);
+  color: #ffffff;
+  border-color: var(--mermaid-viewer-btn-active);
+}
+
+.mermaid-viewer-btn-active:hover {
+  background: var(--mermaid-viewer-btn-active);
+  opacity: 0.9;
+}
+
+.mermaid-viewer-code {
+  overflow: auto;
+}
+
+.mermaid-viewer-code pre {
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.mermaid-viewer-diagram {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+  overflow: auto;
+}
+
+.mermaid-viewer-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.mermaid-viewer-hidden {
+  display: none !important;
+}
+
+.mermaid-viewer-loading {
+  color: var(--mermaid-viewer-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  padding: 20px;
+}
+
+.mermaid-viewer-error {
+  color: #cf222e;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  padding: 16px;
+  background: #ffebe9;
+  border-radius: 4px;
+  margin: 8px;
+}
+
+html.dark .mermaid-viewer-error,
+body.dark .mermaid-viewer-error,
+[data-theme="dark"] .mermaid-viewer-error,
+[data-color-mode="dark"] .mermaid-viewer-error {
+  background: #490202;
+  color: #ff7b72;
+}
+
+.mermaid-viewer-error pre {
+  margin: 8px 0 0 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 12px;
+}

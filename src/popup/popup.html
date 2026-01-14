@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mermaid Viewer</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="popup-header">
+      <h1>Mermaid Viewer</h1>
+      <label class="toggle-switch">
+        <input type="checkbox" id="globalToggle">
+        <span class="toggle-slider"></span>
+      </label>
+    </header>
+
+    <main class="popup-content">
+      <div class="domain-info">
+        <label>Current domain:</label>
+        <span id="currentDomain">-</span>
+      </div>
+
+      <div class="form-group">
+        <label for="selector">Code block selector:</label>
+        <input type="text" id="selector" placeholder="pre > code">
+        <small class="help-text">CSS selector for code blocks to scan</small>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="autoRender">
+          <span>Auto-render diagrams</span>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="domainEnabled">
+          <span>Enable for this domain</span>
+        </label>
+      </div>
+
+      <div class="button-group">
+        <button id="saveBtn" class="btn btn-primary">Save for this domain</button>
+        <button id="resetBtn" class="btn btn-secondary">Reset to default</button>
+      </div>
+
+      <div id="status" class="status-message"></div>
+    </main>
+
+    <footer class="popup-footer">
+      <span id="processedCount">0 diagrams found</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
