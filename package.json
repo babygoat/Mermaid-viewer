@@ -9,7 +9,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:e2e:ci": "playwright test --headed=false"
+    "test:e2e:ci": "CI=true playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",
