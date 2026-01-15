@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Basic Mermaid Test Page</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    pre { background: #f4f4f4; padding: 16px; border-radius: 4px; }
+    code { font-family: monospace; }
+  </style>
+</head>
+<body>
+  <h1>Mermaid Code Block Test</h1>
+
+  <h2>Flowchart</h2>
+  <pre><code>graph TD
+    A[Start] --> B{Decision}
+    B -->|Yes| C[OK]
+    B -->|No| D[Cancel]</code></pre>
+
+  <h2>Sequence Diagram</h2>
+  <pre><code>sequenceDiagram
+    Alice->>Bob: Hello Bob!
+    Bob-->>Alice: Hi Alice!</code></pre>
+
+  <h2>Non-Mermaid Code (should not be detected)</h2>
+  <pre><code>function hello() {
+    console.log("Hello, World!");
+}</code></pre>
+
+  <h2>Class Diagram</h2>
+  <pre><code>classDiagram
+    Animal <|-- Duck
+    Animal <|-- Fish
+    Animal : +int age
+    Animal : +String gender</code></pre>
+</body>
+</html>
