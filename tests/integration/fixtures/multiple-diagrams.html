@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multiple Mermaid Diagrams Test</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    pre { background: #f4f4f4; padding: 16px; border-radius: 4px; }
+    code { font-family: monospace; }
+  </style>
+</head>
+<body>
+  <h1>Multiple Mermaid Diagrams</h1>
+
+  <h2>Flowchart</h2>
+  <pre><code>graph TD
+    A[Start] --> B[End]</code></pre>
+
+  <h2>Sequence Diagram</h2>
+  <pre><code>sequenceDiagram
+    Alice->>Bob: Hello</code></pre>
+
+  <h2>Class Diagram</h2>
+  <pre><code>classDiagram
+    Animal <|-- Dog</code></pre>
+
+  <h2>Non-Mermaid Code (should be ignored)</h2>
+  <pre><code>function test() {
+    return 42;
+}</code></pre>
+</body>
+</html>
