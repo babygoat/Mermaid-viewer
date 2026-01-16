@@ -10,9 +10,11 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
+  timeout: 10000,
 
   use: {
     trace: 'on-first-retry',
+    baseURL: 'http://localhost:3456',
   },
 
   projects: [
@@ -26,16 +28,24 @@ export default defineConfig({
             `--disable-extensions-except=${extensionPath}`,
             `--load-extension=${extensionPath}`,
           ],
-          // Headed mode locally, headless in CI (Chrome's new headless supports extensions)
+          // Chrome's new headless mode supports extensions
           headless: !!process.env.CI,
         },
       },
     },
   ],
 
-  // Build extension before running tests
-  webServer: {
-    command: 'npm run build',
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      // Build extension before running tests
+      command: 'npm run build',
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      // Serve test fixtures via HTTP
+      command: 'npx serve tests/integration/fixtures -l 3456 --no-clipboard',
+      url: 'http://localhost:3456',
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
 });

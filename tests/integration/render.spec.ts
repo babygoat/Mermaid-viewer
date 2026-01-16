@@ -1,14 +1,11 @@
 import { test, expect } from '@playwright/test';
-import path from 'path';
-
-const fixturesPath = path.join(__dirname, 'fixtures');
 
 test.describe('render', () => {
   test.describe('given page with flowchart code block', () => {
     test('when extension loads and auto-renders, then SVG diagram is visible in diagram view', async ({
       page,
     }) => {
-      await page.goto(`file://${fixturesPath}/basic-mermaid.html`);
+      await page.goto('/basic-mermaid.html');
 
       // Wait for extension to process the page
       await page.waitForSelector('.mermaid-viewer-wrapper');
@@ -26,7 +23,7 @@ test.describe('render', () => {
     test('when extension loads and auto-renders, then SVG diagram is visible in diagram view', async ({
       page,
     }) => {
-      await page.goto(`file://${fixturesPath}/basic-mermaid.html`);
+      await page.goto('/basic-mermaid.html');
 
       // Wait for extension to process the page
       await page.waitForSelector('.mermaid-viewer-wrapper');
@@ -45,7 +42,7 @@ test.describe('render', () => {
     test('when extension loads and auto-renders, then SVG diagram is visible in diagram view', async ({
       page,
     }) => {
-      await page.goto(`file://${fixturesPath}/basic-mermaid.html`);
+      await page.goto('/basic-mermaid.html');
 
       // Wait for extension to process the page
       await page.waitForSelector('.mermaid-viewer-wrapper');
@@ -61,7 +58,7 @@ test.describe('render', () => {
     test('when extension loads and user clicks Diagram tab, then error message is displayed', async ({
       page,
     }) => {
-      await page.goto(`file://${fixturesPath}/invalid-mermaid.html`);
+      await page.goto('/invalid-mermaid.html');
 
       // Wait for extension to process the page
       await page.waitForSelector('.mermaid-viewer-wrapper');
@@ -79,7 +76,7 @@ test.describe('render', () => {
 
   test.describe('given page with multiple Mermaid blocks', () => {
     test('when extension loads, then all blocks have toggle UI added', async ({ page }) => {
-      await page.goto(`file://${fixturesPath}/multiple-diagrams.html`);
+      await page.goto('/multiple-diagrams.html');
 
       // Wait for extension to process the page
       await page.waitForSelector('.mermaid-viewer-wrapper');

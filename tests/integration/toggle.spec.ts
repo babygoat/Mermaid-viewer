@@ -1,14 +1,11 @@
 import { test, expect } from '@playwright/test';
-import path from 'path';
-
-const fixturesPath = path.join(__dirname, 'fixtures');
 
 test.describe('toggle', () => {
   test.describe('given page with rendered Mermaid block', () => {
     test('when user clicks "Code" button, then code view is visible and diagram view is hidden', async ({
       page,
     }) => {
-      await page.goto(`file://${fixturesPath}/basic-mermaid.html`);
+      await page.goto('/basic-mermaid.html');
 
       // Wait for extension to process and auto-render
       await page.waitForSelector('.mermaid-viewer-wrapper');
@@ -33,7 +30,7 @@ test.describe('toggle', () => {
     test('when user clicks "Diagram" button, then diagram view is visible and code view is hidden', async ({
       page,
     }) => {
-      await page.goto(`file://${fixturesPath}/basic-mermaid.html`);
+      await page.goto('/basic-mermaid.html');
 
       // Wait for extension to process
       await page.waitForSelector('.mermaid-viewer-wrapper');
@@ -61,7 +58,7 @@ test.describe('toggle', () => {
     test('when toggle buttons are rendered, then "Code" and "Diagram" buttons are visible', async ({
       page,
     }) => {
-      await page.goto(`file://${fixturesPath}/basic-mermaid.html`);
+      await page.goto('/basic-mermaid.html');
 
       // Wait for extension to process
       await page.waitForSelector('.mermaid-viewer-wrapper');
@@ -80,7 +77,7 @@ test.describe('toggle', () => {
     test('when user toggles Code → Diagram → Code, then views switch correctly each time', async ({
       page,
     }) => {
-      await page.goto(`file://${fixturesPath}/basic-mermaid.html`);
+      await page.goto('/basic-mermaid.html');
 
       // Wait for extension to process
       await page.waitForSelector('.mermaid-viewer-wrapper');
@@ -116,7 +113,7 @@ test.describe('toggle', () => {
     test('when extension loads, then no toggle UI is added to non-Mermaid block', async ({
       page,
     }) => {
-      await page.goto(`file://${fixturesPath}/multiple-diagrams.html`);
+      await page.goto('/multiple-diagrams.html');
 
       // Wait for extension to process
       await page.waitForSelector('.mermaid-viewer-wrapper');

@@ -1,20 +1,12 @@
 import { test, expect, type BrowserContext } from '@playwright/test';
-import path from 'path';
-
-const fixturesPath = path.join(__dirname, 'fixtures');
 
 /**
  * Get the extension ID from the browser context
  */
 async function getExtensionId(context: BrowserContext): Promise<string> {
-  // Open a page to trigger extension loading
-  const page = await context.newPage();
-  await page.goto(`file://${fixturesPath}/basic-mermaid.html`);
-
-  // Get extension ID from service worker
+  // Wait for service worker and get its URL to extract extension ID
   let extensionId = '';
 
-  // Wait for service worker and get its URL to extract extension ID
   const workers = context.serviceWorkers();
   if (workers.length > 0) {
     const url = workers[0].url();
@@ -34,7 +26,6 @@ async function getExtensionId(context: BrowserContext): Promise<string> {
     }
   }
 
-  await page.close();
   return extensionId;
 }
 
@@ -43,7 +34,7 @@ test.describe('popup', () => {
     test('when user views popup, then current domain is displayed', async ({ context }) => {
       // First navigate to a page to set the active tab
       const page = await context.newPage();
-      await page.goto(`file://${fixturesPath}/basic-mermaid.html`);
+      await page.goto('/basic-mermaid.html');
 
       // Get extension ID
       const extensionId = await getExtensionId(context);
@@ -53,7 +44,7 @@ test.describe('popup', () => {
       const popupPage = await context.newPage();
       await popupPage.goto(`chrome-extension://${extensionId}/popup/popup.html`);
 
-      // Check that domain is displayed (will be empty or 'N/A' for file:// URLs)
+      // Check that domain element is visible
       const domainElement = popupPage.locator('#currentDomain');
       await expect(domainElement).toBeVisible();
 
@@ -67,7 +58,7 @@ test.describe('popup', () => {
       context,
     }) => {
       const page = await context.newPage();
-      await page.goto(`file://${fixturesPath}/basic-mermaid.html`);
+      await page.goto('/basic-mermaid.html');
 
       const extensionId = await getExtensionId(context);
 
@@ -97,7 +88,7 @@ test.describe('popup', () => {
       context,
     }) => {
       const page = await context.newPage();
-      await page.goto(`file://${fixturesPath}/basic-mermaid.html`);
+      await page.goto('/basic-mermaid.html');
 
       const extensionId = await getExtensionId(context);
 
@@ -129,7 +120,7 @@ test.describe('popup', () => {
   test.describe('given extension popup with saved domain settings', () => {
     test('when user clicks Reset, then domain settings return to default', async ({ context }) => {
       const page = await context.newPage();
-      await page.goto(`file://${fixturesPath}/basic-mermaid.html`);
+      await page.goto('/basic-mermaid.html');
 
       const extensionId = await getExtensionId(context);
 
@@ -166,7 +157,7 @@ test.describe('popup', () => {
       context,
     }) => {
       const page = await context.newPage();
-      await page.goto(`file://${fixturesPath}/basic-mermaid.html`);
+      await page.goto('/basic-mermaid.html');
 
       const extensionId = await getExtensionId(context);
 
