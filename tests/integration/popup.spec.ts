@@ -25,8 +25,11 @@ test.describe('popup', () => {
       await expect(autoRenderCheckbox).toBeVisible();
       await expect(autoRenderCheckbox).toBeChecked(); // Default: on
 
+      // Global toggle is a custom styled switch (checkbox is visually hidden via CSS)
+      // Check the toggle switch container is visible and checkbox state is correct
+      const toggleSwitch = popupPage.locator('.toggle-switch');
+      await expect(toggleSwitch).toBeVisible();
       const globalToggle = popupPage.locator('#globalToggle');
-      await expect(globalToggle).toBeVisible();
       await expect(globalToggle).toBeChecked(); // Default: on
 
       const saveBtn = popupPage.locator('#saveBtn');
