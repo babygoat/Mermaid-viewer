@@ -55,9 +55,11 @@ test.describe('toggle', () => {
       const wrappers = page.locator('.mermaid-viewer-wrapper');
       await expect(wrappers).toHaveCount(3);
 
-      // 4 code blocks total, 3 wrapped = 1 unwrapped (the JS code)
-      const allCodeBlocks = page.locator('pre > code');
-      await expect(allCodeBlocks).toHaveCount(4);
+      // Verify non-mermaid code block is NOT wrapped (still direct child of body's structure)
+      // Note: Extension hides original pre elements and clones them into wrapper,
+      // so we check that there's exactly 1 unwrapped pre > code (the JS code)
+      const unwrappedCodeBlocks = page.locator('pre:not([style*="display: none"]) > code:not([data-mermaid-processed])');
+      await expect(unwrappedCodeBlocks).toHaveCount(1);
 
       await page.close();
     });
