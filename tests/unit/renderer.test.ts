@@ -226,7 +226,7 @@ describe('renderer', () => {
   });
 
   describe('renderMermaid', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       vi.resetModules();
       vi.clearAllMocks();
     });
