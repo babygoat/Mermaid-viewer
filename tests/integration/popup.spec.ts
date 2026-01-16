@@ -1,43 +1,15 @@
-import { test, expect, type BrowserContext } from '@playwright/test';
-
-/**
- * Get the extension ID from the browser context
- */
-async function getExtensionId(context: BrowserContext): Promise<string> {
-  // Wait for service worker and get its URL to extract extension ID
-  let extensionId = '';
-
-  const workers = context.serviceWorkers();
-  if (workers.length > 0) {
-    const url = workers[0].url();
-    const match = url.match(/chrome-extension:\/\/([^/]+)/);
-    if (match) {
-      extensionId = match[1];
-    }
-  }
-
-  // If no service worker yet, wait for it
-  if (!extensionId) {
-    const worker = await context.waitForEvent('serviceworker');
-    const url = worker.url();
-    const match = url.match(/chrome-extension:\/\/([^/]+)/);
-    if (match) {
-      extensionId = match[1];
-    }
-  }
-
-  return extensionId;
-}
+import { test, expect } from './fixtures';
 
 test.describe('popup', () => {
   test.describe('given extension popup opened', () => {
-    test('when user views popup, then current domain is displayed', async ({ context }) => {
+    test('when user views popup, then current domain is displayed', async ({
+      context,
+      extensionId,
+    }) => {
       // First navigate to a page to set the active tab
       const page = await context.newPage();
-      await page.goto('/basic-mermaid.html');
+      await page.goto('http://localhost:3456/basic-mermaid.html');
 
-      // Get extension ID
-      const extensionId = await getExtensionId(context);
       expect(extensionId).toBeTruthy();
 
       // Open popup in new page
@@ -56,11 +28,10 @@ test.describe('popup', () => {
   test.describe('given extension popup with selector input', () => {
     test('when user changes selector and clicks Save, then new selector is persisted', async ({
       context,
+      extensionId,
     }) => {
       const page = await context.newPage();
-      await page.goto('/basic-mermaid.html');
-
-      const extensionId = await getExtensionId(context);
+      await page.goto('http://localhost:3456/basic-mermaid.html');
 
       // Open popup
       const popupPage = await context.newPage();
@@ -86,11 +57,10 @@ test.describe('popup', () => {
   test.describe('given extension popup with auto-render checkbox', () => {
     test('when user unchecks auto-render and saves, then setting is persisted', async ({
       context,
+      extensionId,
     }) => {
       const page = await context.newPage();
-      await page.goto('/basic-mermaid.html');
-
-      const extensionId = await getExtensionId(context);
+      await page.goto('http://localhost:3456/basic-mermaid.html');
 
       // Open popup
       const popupPage = await context.newPage();
@@ -118,11 +88,12 @@ test.describe('popup', () => {
   });
 
   test.describe('given extension popup with saved domain settings', () => {
-    test('when user clicks Reset, then domain settings return to default', async ({ context }) => {
+    test('when user clicks Reset, then domain settings return to default', async ({
+      context,
+      extensionId,
+    }) => {
       const page = await context.newPage();
-      await page.goto('/basic-mermaid.html');
-
-      const extensionId = await getExtensionId(context);
+      await page.goto('http://localhost:3456/basic-mermaid.html');
 
       // Open popup and save custom settings first
       const popupPage = await context.newPage();
@@ -155,11 +126,10 @@ test.describe('popup', () => {
   test.describe('given extension popup with global toggle', () => {
     test('when user toggles extension off, then extension is disabled globally', async ({
       context,
+      extensionId,
     }) => {
       const page = await context.newPage();
-      await page.goto('/basic-mermaid.html');
-
-      const extensionId = await getExtensionId(context);
+      await page.goto('http://localhost:3456/basic-mermaid.html');
 
       // Open popup
       const popupPage = await context.newPage();

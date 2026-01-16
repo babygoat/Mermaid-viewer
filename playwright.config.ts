@@ -1,7 +1,4 @@
 import { defineConfig } from '@playwright/test';
-import path from 'path';
-
-const extensionPath = path.join(__dirname, 'dist');
 
 export default defineConfig({
   testDir: './tests/integration',
@@ -11,29 +8,6 @@ export default defineConfig({
   workers: 1, // Extensions require single worker
   reporter: 'html',
   timeout: 10000,
-
-  use: {
-    baseURL: 'http://localhost:3456',
-    trace: 'on-first-retry',
-  },
-
-  projects: [
-    {
-      name: 'chromium',
-      use: {
-        // Extension testing requires specific Chrome args
-        launchOptions: {
-          args: [
-            `--disable-extensions-except=${extensionPath}`,
-            `--load-extension=${extensionPath}`,
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-          ],
-          headless: false, // Extensions don't work in headless mode
-        },
-      },
-    },
-  ],
 
   webServer: [
     {
