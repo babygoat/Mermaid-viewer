@@ -6,7 +6,7 @@ const isWatch = process.argv.includes('--watch');
 
 // Ensure dist directories exist
 const dirs = [
-  'dist',
+  path.join('dist'),
   path.join('dist', 'content'),
   path.join('dist', 'popup'),
   path.join('dist', 'background'),
@@ -29,8 +29,8 @@ function copyStaticFiles() {
   }
 
   // Copy icons (PNG files only, skip SVGs)
-  if (fs.existsSync('icons')) {
-    const icons = fs.readdirSync('icons').filter(f => f.endsWith('.png'));
+  if (fs.existsSync(path.join('icons'))) {
+    const icons = fs.readdirSync(path.join('icons')).filter(f => f.endsWith('.png'));
     icons.forEach(icon => {
       fs.copyFileSync(path.join('icons', icon), path.join('dist', 'icons', icon));
     });
