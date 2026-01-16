@@ -78,6 +78,33 @@ feat(detector): implement Mermaid keyword detection
 - Implement findMermaidBlocks() with selector support
 ```
 
+## Dependency Management
+
+### Keeping package.json and package-lock.json in Sync
+
+**IMPORTANT**: Always keep `package.json` and `package-lock.json` in sync.
+
+When updating dependencies:
+
+1. **After modifying `package.json`**, always run `npm install` to update `package-lock.json`
+2. **Commit both files together** in the same commit
+3. **CI uses `npm ci`** which requires `package-lock.json` to match `package.json` exactly
+
+```bash
+# Correct workflow when adding/updating dependencies
+npm install <package>          # Automatically updates both files
+git add package.json package-lock.json
+git commit -m "chore(deps): add <package>"
+
+# If manually editing package.json
+vim package.json               # Edit the file
+npm install                    # Sync package-lock.json
+git add package.json package-lock.json
+git commit -m "chore(deps): update dependencies"
+```
+
+**Why this matters**: `npm ci` (used in CI) fails if the lock file doesn't match `package.json`.
+
 ## Testing Strategy
 
 ### Unit Tests (Vitest)
