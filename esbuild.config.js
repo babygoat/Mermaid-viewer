@@ -5,7 +5,13 @@ const fs = require('fs');
 const isWatch = process.argv.includes('--watch');
 
 // Ensure dist directories exist
-const dirs = ['dist', 'dist/content', 'dist/popup', 'dist/background', 'dist/icons'];
+const dirs = [
+  'dist',
+  path.join('dist', 'content'),
+  path.join('dist', 'popup'),
+  path.join('dist', 'background'),
+  path.join('dist', 'icons')
+];
 dirs.forEach(dir => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
@@ -15,37 +21,37 @@ dirs.forEach(dir => {
 // Copy static files
 function copyStaticFiles() {
   // Copy manifest.json
-  fs.copyFileSync('manifest.json', 'dist/manifest.json');
+  fs.copyFileSync('manifest.json', path.join('dist', 'manifest.json'));
 
   // Copy popup HTML
-  if (fs.existsSync('src/popup/popup.html')) {
-    fs.copyFileSync('src/popup/popup.html', 'dist/popup/popup.html');
+  if (fs.existsSync(path.join('src', 'popup', 'popup.html'))) {
+    fs.copyFileSync(path.join('src', 'popup', 'popup.html'), path.join('dist', 'popup', 'popup.html'));
   }
 
   // Copy icons (PNG files only, skip SVGs)
   if (fs.existsSync('icons')) {
     const icons = fs.readdirSync('icons').filter(f => f.endsWith('.png'));
     icons.forEach(icon => {
-      fs.copyFileSync(`icons/${icon}`, `dist/icons/${icon}`);
+      fs.copyFileSync(path.join('icons', icon), path.join('dist', 'icons', icon));
     });
   }
 
   // Copy content styles
-  if (fs.existsSync('src/content/styles.css')) {
-    fs.copyFileSync('src/content/styles.css', 'dist/content/styles.css');
+  if (fs.existsSync(path.join('src', 'content', 'styles.css'))) {
+    fs.copyFileSync(path.join('src', 'content', 'styles.css'), path.join('dist', 'content', 'styles.css'));
   }
 
   // Copy popup styles
-  if (fs.existsSync('src/popup/popup.css')) {
-    fs.copyFileSync('src/popup/popup.css', 'dist/popup/popup.css');
+  if (fs.existsSync(path.join('src', 'popup', 'popup.css'))) {
+    fs.copyFileSync(path.join('src', 'popup', 'popup.css'), path.join('dist', 'popup', 'popup.css'));
   }
 }
 
 // Build configuration for content script
 const contentConfig = {
-  entryPoints: ['src/content/index.ts'],
+  entryPoints: [path.join('src', 'content', 'index.ts')],
   bundle: true,
-  outfile: 'dist/content/index.js',
+  outfile: path.join('dist', 'content', 'index.js'),
   format: 'iife',
   target: ['chrome90'],
   sourcemap: isWatch ? 'inline' : false,
@@ -54,9 +60,9 @@ const contentConfig = {
 
 // Build configuration for popup
 const popupConfig = {
-  entryPoints: ['src/popup/popup.ts'],
+  entryPoints: [path.join('src', 'popup', 'popup.ts')],
   bundle: true,
-  outfile: 'dist/popup/popup.js',
+  outfile: path.join('dist', 'popup', 'popup.js'),
   format: 'iife',
   target: ['chrome90'],
   sourcemap: isWatch ? 'inline' : false,
@@ -65,9 +71,9 @@ const popupConfig = {
 
 // Build configuration for background service worker
 const backgroundConfig = {
-  entryPoints: ['src/background/service-worker.ts'],
+  entryPoints: [path.join('src', 'background', 'service-worker.ts')],
   bundle: true,
-  outfile: 'dist/background/service-worker.js',
+  outfile: path.join('dist', 'background', 'service-worker.js'),
   format: 'esm',
   target: ['chrome90'],
   sourcemap: isWatch ? 'inline' : false,
