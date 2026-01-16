@@ -32,14 +32,14 @@ let currentSettings: Settings | null = null;
 async function getCurrentTabDomain(): Promise<string> {
   return new Promise((resolve) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]?.url) {
-        try {
-          const url = new URL(tabs[0].url);
-          resolve(url.hostname);
-        } catch {
-          resolve('');
-        }
-      } else {
+      if (chrome.runtime.lastError || !tabs[0]?.url) {
+        resolve('');
+        return;
+      }
+      try {
+        const url = new URL(tabs[0].url);
+        resolve(url.hostname);
+      } catch {
         resolve('');
       }
     });
@@ -52,17 +52,17 @@ async function getCurrentTabDomain(): Promise<string> {
 async function getContentStatus(): Promise<{ domain: string; processed: number } | null> {
   return new Promise((resolve) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]?.id) {
-        chrome.tabs.sendMessage(tabs[0].id, { type: 'GET_STATUS' }, (response) => {
-          if (chrome.runtime.lastError) {
-            resolve(null);
-          } else {
-            resolve(response);
-          }
-        });
-      } else {
+      if (chrome.runtime.lastError || !tabs[0]?.id) {
         resolve(null);
+        return;
       }
+      chrome.tabs.sendMessage(tabs[0].id, { type: 'GET_STATUS' }, (response) => {
+        if (chrome.runtime.lastError) {
+          resolve(null);
+        } else {
+          resolve(response);
+        }
+      });
     });
   });
 }
@@ -73,13 +73,13 @@ async function getContentStatus(): Promise<{ domain: string; processed: number }
 async function notifyContentScript(): Promise<void> {
   return new Promise((resolve) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]?.id) {
-        chrome.tabs.sendMessage(tabs[0].id, { type: 'REFRESH' }, () => {
-          resolve();
-        });
-      } else {
+      if (chrome.runtime.lastError || !tabs[0]?.id) {
         resolve();
+        return;
       }
+      chrome.tabs.sendMessage(tabs[0].id, { type: 'REFRESH' }, () => {
+        resolve();
+      });
     });
   });
 }
