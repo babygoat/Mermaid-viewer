@@ -55,9 +55,9 @@ test.describe('toggle', () => {
       const wrappers = page.locator('.mermaid-viewer-wrapper');
       await expect(wrappers).toHaveCount(3);
 
-      // 4 code blocks total, 3 wrapped = 1 unwrapped (the JS code)
+      // 7 code blocks total: 3 hidden original Mermaid + 3 cloned in wrappers + 1 non-Mermaid
       const allCodeBlocks = page.locator('pre > code');
-      await expect(allCodeBlocks).toHaveCount(4);
+      await expect(allCodeBlocks).toHaveCount(7);
 
       await page.close();
     });

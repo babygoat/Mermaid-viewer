@@ -43,7 +43,7 @@ test.describe('popup', () => {
 
       // Change settings
       const autoRenderCheckbox = popupPage.locator('#autoRender');
-      await autoRenderCheckbox.uncheck();
+      await autoRenderCheckbox.click({ force: true });
 
       // Save
       await popupPage.locator('#saveBtn').click();
@@ -80,7 +80,7 @@ test.describe('popup', () => {
       const globalToggle = popupPage.locator('#globalToggle');
       await expect(globalToggle).toBeChecked();
 
-      await globalToggle.uncheck();
+      await globalToggle.click({ force: true });
       await expect(popupPage.locator('#status')).toContainText('disabled');
       await expect(globalToggle).not.toBeChecked();
 
