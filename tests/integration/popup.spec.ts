@@ -50,19 +50,22 @@ test.describe('popup', () => {
       const popupPage = await context.newPage();
       await popupPage.goto(`chrome-extension://${extensionId}/popup/popup.html`);
 
+      // The checkbox is hidden (opacity:0, 0x0) for custom styling
+      // Click the visible <label class="toggle-switch"> to toggle state
+      const toggleSwitch = popupPage.locator('.toggle-switch');
       const globalToggle = popupPage.locator('#globalToggle');
       const statusEl = popupPage.locator('#status');
 
       // Should be enabled by default
       await expect(globalToggle).toBeChecked();
 
-      // Toggle off
-      await globalToggle.uncheck();
+      // Toggle off by clicking the visible label
+      await toggleSwitch.click();
       await expect(statusEl).toContainText('disabled');
       await expect(globalToggle).not.toBeChecked();
 
       // Toggle back on
-      await globalToggle.check();
+      await toggleSwitch.click();
       await expect(statusEl).toContainText('enabled');
       await expect(globalToggle).toBeChecked();
 
