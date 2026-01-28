@@ -1,0 +1,89 @@
+name: Publish to Chrome Web Store
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish (e.g., v1.0.0)'
+        required: true
+        type: string
+      dry_run:
+        description: 'Dry run (build only, no upload)'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  publish:
+    name: Publish Extension
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository at tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get version from tag
+        id: version
+        run: |
+          version="${{ github.event.inputs.tag }}"
+          version="${version#v}"
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Verify version matches manifest
+        run: |
+          manifest_version=$(node -p "require('./manifest.json').version")
+          expected_version="${{ steps.version.outputs.version }}"
+          if [ "$manifest_version" != "$expected_version" ]; then
+            echo "Version mismatch! manifest.json: $manifest_version, expected: $expected_version"
+            exit 1
+          fi
+          echo "Version verified: $manifest_version"
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Create extension ZIP
+        run: |
+          cd dist
+          zip -r ../mermaid-viewer-v${{ steps.version.outputs.version }}.zip .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-zip
+          path: mermaid-viewer-v${{ steps.version.outputs.version }}.zip
+
+      - name: Publish to Chrome Web Store
+        if: ${{ !github.event.inputs.dry_run }}
+        run: |
+          # Install chrome-webstore-upload-cli
+          npm install -g chrome-webstore-upload-cli
+
+          # Upload and publish
+          chrome-webstore-upload upload \
+            --source mermaid-viewer-v${{ steps.version.outputs.version }}.zip \
+            --extension-id ${{ secrets.CHROME_EXTENSION_ID }} \
+            --client-id ${{ secrets.CHROME_CLIENT_ID }} \
+            --client-secret ${{ secrets.CHROME_CLIENT_SECRET }} \
+            --refresh-token ${{ secrets.CHROME_REFRESH_TOKEN }}
+
+          echo "Extension uploaded successfully!"
+          echo "Note: The extension will go through Chrome Web Store review before being published."
+
+      - name: Dry run summary
+        if: ${{ github.event.inputs.dry_run }}
+        run: |
+          echo "Dry run completed successfully!"
+          echo "Extension ZIP created: mermaid-viewer-v${{ steps.version.outputs.version }}.zip"
+          echo "To publish for real, run this workflow again with dry_run unchecked."
