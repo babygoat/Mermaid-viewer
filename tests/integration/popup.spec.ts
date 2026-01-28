@@ -43,7 +43,7 @@ test.describe('popup', () => {
   });
 
   test.describe('given extension popup with global toggle', () => {
-    test('when user toggles extension off and on, then global state changes', async ({
+    test('when user toggles extension off and on, then global state changes and persists', async ({
       context,
       extensionId,
     }) => {
@@ -64,10 +64,36 @@ test.describe('popup', () => {
       await expect(statusEl).toContainText('disabled');
       await expect(globalToggle).not.toBeChecked();
 
+      // Reload and verify state persisted
+      await popupPage.reload();
+      await expect(globalToggle).not.toBeChecked();
+
       // Toggle back on
       await toggleSwitch.click();
       await expect(statusEl).toContainText('enabled');
       await expect(globalToggle).toBeChecked();
+
+      await popupPage.close();
+    });
+  });
+
+  test.describe('given extension popup without active tab domain', () => {
+    test('when user tries to save domain settings, then error is shown', async ({
+      context,
+      extensionId,
+    }) => {
+      // Open popup directly without navigating to a page first
+      // This simulates opening popup when no domain can be detected
+      const popupPage = await context.newPage();
+      await popupPage.goto(`chrome-extension://${extensionId}/popup/popup.html`);
+
+      // Domain should show N/A or empty
+      const domainElement = popupPage.locator('#currentDomain');
+      await expect(domainElement).toBeVisible();
+
+      // Try to save - should show error since no domain
+      await popupPage.locator('#saveBtn').click();
+      await expect(popupPage.locator('#status')).toContainText('no domain');
 
       await popupPage.close();
     });
