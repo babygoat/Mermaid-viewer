@@ -1,0 +1,167 @@
+name: Release
+
+on:
+  # Manual trigger with version type selection
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - patch
+          - minor
+          - major
+
+  # Tag-based trigger
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  # Run tests first
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/tests.yml
+
+  release:
+    name: Create Release
+    needs: test
+    runs-on: ubuntu-latest
+    # Only run on manual dispatch (tag push skips version bump)
+    if: github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version and generate changelog
+        id: version
+        run: |
+          if [ "${{ github.event.inputs.release_type }}" == "auto" ]; then
+            npm run release
+          else
+            npm run release:${{ github.event.inputs.release_type }}
+          fi
+          echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Create extension ZIP
+        run: |
+          cd dist
+          zip -r ../mermaid-viewer-v${{ steps.version.outputs.version }}.zip .
+
+      - name: Extract changelog for release
+        id: changelog
+        run: |
+          # Extract the latest version's changelog section
+          version="${{ steps.version.outputs.version }}"
+          # Get content between this version header and the next version header (or end of relevant content)
+          changelog=$(sed -n "/^## \[$version\]/,/^## \[/p" CHANGELOG.md | sed '$d')
+          # If no next version found, get from this version to end
+          if [ -z "$changelog" ]; then
+            changelog=$(sed -n "/^## \[$version\]/,\$p" CHANGELOG.md)
+          fi
+          # Write to file to preserve newlines
+          echo "$changelog" > release_notes.md
+
+      - name: Push changes
+        run: |
+          git push origin HEAD:main
+          git push origin --tags
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: Release v${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          files: mermaid-viewer-v${{ steps.version.outputs.version }}.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Handle tag-based releases (version already bumped)
+  release-from-tag:
+    name: Release from Tag
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get version from tag
+        id: version
+        run: |
+          version="${GITHUB_REF#refs/tags/v}"
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Create extension ZIP
+        run: |
+          cd dist
+          zip -r ../mermaid-viewer-v${{ steps.version.outputs.version }}.zip .
+
+      - name: Extract changelog for release
+        id: changelog
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          changelog=$(sed -n "/^## \[$version\]/,/^## \[/p" CHANGELOG.md | sed '$d')
+          if [ -z "$changelog" ]; then
+            changelog=$(sed -n "/^## \[$version\]/,\$p" CHANGELOG.md)
+          fi
+          if [ -z "$changelog" ]; then
+            echo "## Release v$version" > release_notes.md
+          else
+            echo "$changelog" > release_notes.md
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release v${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          files: mermaid-viewer-v${{ steps.version.outputs.version }}.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
